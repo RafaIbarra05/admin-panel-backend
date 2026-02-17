@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 
@@ -22,20 +26,41 @@ export class SalesService {
       throw new BadRequestException('items must not be empty');
     }
 
+    // 0) Normalizar items: agrupar por productId y sumar quantities
+    const merged = new Map<string, number>();
+    for (const item of dto.items) {
+      merged.set(
+        item.productId,
+        (merged.get(item.productId) ?? 0) + item.quantity,
+      );
+    }
+
+    const normalizedItems = Array.from(merged.entries()).map(
+      ([productId, quantity]) => ({
+        productId,
+        quantity,
+      }),
+    );
+
     // 1) Traer productos y validar que existan
-    const productIds = dto.items.map((i) => i.productId);
+    const productIds = normalizedItems.map((i) => i.productId);
     const products = await this.prisma.product.findMany({
       where: { id: { in: productIds } },
     });
 
-    if (products.length !== new Set(productIds).size) {
-      throw new BadRequestException('One or more products do not exist');
+    const foundIds = new Set(products.map((p) => p.id));
+    const missing = productIds.filter((id) => !foundIds.has(id));
+    if (missing.length) {
+      throw new BadRequestException({
+        message: 'One or more products do not exist',
+        missingProductIds: missing,
+      });
     }
 
     const productById = new Map(products.map((p) => [p.id, p]));
 
     // 2) Calcular total (unitPrice = precio actual del producto)
-    const total = dto.items.reduce((acc, item) => {
+    const total = normalizedItems.reduce((acc, item) => {
       const product = productById.get(item.productId)!;
       return acc + Number(product.price) * item.quantity;
     }, 0);
@@ -47,7 +72,7 @@ export class SalesService {
       });
 
       await tx.saleItem.createMany({
-        data: dto.items.map((item) => {
+        data: normalizedItems.map((item) => {
           const product = productById.get(item.productId)!;
           return {
             saleId: sale.id,
@@ -63,5 +88,16 @@ export class SalesService {
         include: { items: { include: { product: true } } },
       });
     });
+  }
+
+  async findOne(id: string) {
+    const sale = await this.prisma.sale.findUnique({
+      where: { id },
+      include: { items: { include: { product: true } } },
+    });
+
+    if (!sale) throw new NotFoundException('Sale not found');
+
+    return sale;
   }
 }
