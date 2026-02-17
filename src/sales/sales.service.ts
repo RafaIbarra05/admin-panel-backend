@@ -10,15 +10,28 @@ import { CreateSaleDto } from './dto/create-sale.dto';
 export class SalesService {
   constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.sale.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        items: {
-          include: { product: true },
-        },
+  async findAll(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.sale.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        include: { items: { include: { product: true } } },
+      }),
+      this.prisma.sale.count(),
+    ]);
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async create(dto: CreateSaleDto) {
