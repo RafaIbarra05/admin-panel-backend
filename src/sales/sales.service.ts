@@ -25,7 +25,7 @@ type PrismaSale = {
 export class SalesService {
   constructor(private prisma: PrismaService) {}
 
-  // ✅ Mapper: Prisma -> DTO (Decimal -> string)
+  // Mapper: Prisma -> DTO (Decimal -> string)
   private toSaleResponseDto(sale: PrismaSale): SaleResponseDto {
     return {
       id: sale.id,
