@@ -29,7 +29,7 @@ export class SalesService {
   private toSaleResponseDto(sale: PrismaSale): SaleResponseDto {
     return {
       id: sale.id,
-      createdAt: sale.createdAt,
+      createdAt: sale.createdAt.toISOString(),
       total: sale.total.toString(),
       items: sale.items.map((it) => ({
         id: it.id,

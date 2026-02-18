@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+class SaleItemProductDto {
+  @ApiProperty({ example: 'cmlqvyfiz0000mgvk5j98sjd8' })
+  id: string;
+
+  @ApiProperty({ example: 'Coca Cola 1.5L' })
+  name: string;
+}
+
 export class SaleItemResponseDto {
   @ApiProperty({ example: 'cml...' })
   id: string;
@@ -16,7 +24,7 @@ export class SaleItemResponseDto {
   @ApiProperty({
     example: { id: 'cml...', name: 'Coca Cola 1.5L' },
   })
-  product: { id: string; name: string };
+  product: SaleItemProductDto;
 }
 
 export class SaleResponseDto {
