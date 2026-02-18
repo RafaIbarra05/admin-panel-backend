@@ -20,11 +20,14 @@ import {
   ApiUnauthorized,
 } from 'src/common/docs/swagger.decorators';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
-
+@ApiTags('products')
+@ApiBearerAuth('jwt')
 @UseGuards(JwtAuthGuard)
 @Controller('products')
 export class ProductsController {
@@ -37,7 +40,7 @@ export class ProductsController {
   async findAll() {
     const data = await this.service.findAll();
     return data.map((p) => {
-      ProductResponseDto.from(p);
+      return ProductResponseDto.from(p);
     });
   }
 

@@ -14,16 +14,19 @@ import { SalesQueryDto } from './dto/sales-query.dto';
 import { SaleResponseDto } from './dto/sale-response.dto';
 import { PaginatedSalesResponseDto } from './dto/paginated-sales-response.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
 import {
   ApiBadRequest,
   ApiNotFound,
   ApiUnauthorized,
 } from 'src/common/docs/swagger.decorators';
-
+@ApiTags('sales')
+@ApiBearerAuth('jwt')
 @UseGuards(JwtAuthGuard)
 @Controller('sales')
 export class SalesController {
