@@ -1,15 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ApiErrorDto {
-  @ApiProperty({ example: 401 })
+  @ApiProperty({ example: 400 })
   statusCode: number;
 
-  @ApiProperty({ example: 'Unauthorized' })
-  error: string;
+  @ApiProperty({ example: 'Database error' })
+  message: string;
 
-  @ApiProperty({
-    example: 'Invalid credentials',
-    oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+  @ApiPropertyOptional({ example: 'P2002' })
+  code?: string;
+
+  @ApiPropertyOptional({
+    example: { target: ['Category_name_key'] },
+    description: 'Prisma error metadata (when available)',
   })
-  message: string | string[];
+  meta?: any;
 }
