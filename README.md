@@ -1,98 +1,253 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Admin Panel API (Backend)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend desarrollado para la prueba técnica de un Admin Panel genérico
+para ecommerce.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- NestJS
+- Prisma
+- PostgreSQL
+- JWT Authentication
+- Swagger
+- Docker (base de datos)
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## Descripción
 
-## Compile and run the project
+Esta API provee:
 
-```bash
-# development
-$ npm run start
+- Autenticación JWT
+- CRUD completo de Categorías
+- CRUD completo de Productos
+- Gestión de Ventas con paginación real
+- Documentación Swagger
+- Manejo centralizado de errores
+- DTOs de request y response
+- Conversión explícita de Decimal → string
+- Transacciones Prisma en creación de ventas
 
-# watch mode
-$ npm run start:dev
+Arquitectura modular y enfocada en buenas prácticas.
 
-# production mode
-$ npm run start:prod
-```
+---
 
-## Run tests
+## Requisitos
 
-```bash
-# unit tests
-$ npm run test
+- Node.js 18+
+- Docker Desktop
+- npm
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
-```
+## Instalación
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 1. Clonar el repositorio
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+git clone <repo-url>
+cd <repo-folder>
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 2. Crear archivo .env
 
-## Resources
+```env
+PORT=3000
+NODE_ENV=development
 
-Check out a few resources that may come in handy when working with NestJS:
+JWT_SECRET=supersecretkey
+JWT_EXPIRES_IN=1h
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+CORS_ORIGIN=http://localhost:3000,http://localhost:3001
 
-## Support
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/api?schema=public
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## Base de Datos
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Levantar PostgreSQL
 
-## License
+```bash
+docker compose up -d
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+O si ya existe el contenedor:
+
+```bash
+docker start api_postgres
+```
+
+Verificar contenedores:
+
+```bash
+docker ps
+```
+
+---
+
+## Prisma
+
+### Crear migraciones en desarrollo
+
+```bash
+npm run prisma:dev
+```
+
+### Aplicar migraciones (producción / deploy)
+
+```bash
+npm run prisma:migrate
+```
+
+### Ejecutar seed
+
+```bash
+npm run prisma:seed
+```
+
+### Abrir Prisma Studio
+
+```bash
+npm run prisma:studio
+```
+
+El seed crea un usuario administrador para login.
+
+---
+
+## Ejecutar API
+
+```bash
+npm install
+npm run start:dev
+```
+
+Servidor:
+
+http://localhost:3000
+
+Swagger:
+
+http://localhost:3000/docs
+
+---
+
+## Autenticación
+
+### Login
+
+POST /auth/login
+
+```json
+{
+  "email": "admin@local.com",
+  "password": "admin1234"
+}
+```
+
+Respuesta:
+
+```json
+{
+  "access_token": "JWT_TOKEN"
+}
+```
+
+### Uso en Swagger
+
+1.  Ejecutar /auth/login
+2.  Copiar access_token
+3.  Click en "Authorize"
+4.  Pegar:
+
+Bearer JWT_TOKEN
+
+---
+
+## Endpoints
+
+### Health
+
+GET /health
+
+---
+
+### Categories (JWT requerido)
+
+GET /categories\
+GET /categories/:id\
+POST /categories\
+PATCH /categories/:id\
+DELETE /categories/:id
+
+---
+
+### Products (JWT requerido)
+
+GET /products\
+GET /products/:id\
+POST /products\
+PATCH /products/:id\
+DELETE /products/:id
+
+- Se valida existencia de categoryId.
+- price se maneja como Decimal en DB.
+- Las respuestas usan DTOs explícitos.
+
+---
+
+### Sales (JWT requerido)
+
+GET /sales?page=1&limit=10\
+GET /sales/:id\
+POST /sales
+
+Características:
+
+- Paginación real (page, limit, total, totalPages)
+- Normalización de items duplicados
+- Validación de productos inexistentes
+- Transacciones Prisma
+- Guardado de unitPrice histórico
+
+---
+
+## Scripts útiles
+
+```bash
+npm run start:dev        # Levanta la API en modo desarrollo
+npm run prisma:dev       # Crea y aplica migraciones en desarrollo
+npm run prisma:migrate   # Aplica migraciones en producción
+npm run prisma:seed      # Ejecuta el seed
+npm run prisma:studio    # Abre Prisma Studio
+```
+
+---
+
+## Arquitectura
+
+Módulos:
+
+- auth
+- categories
+- products
+- sales
+- common
+
+Incluye:
+
+- ValidationPipe global
+- PrismaExceptionFilter
+- JwtAuthGuard
+- DTO mapping explícito
+- Swagger con BearerAuth
+
+---
+
+## Estado
+
+Backend completo y listo para integración con frontend.
