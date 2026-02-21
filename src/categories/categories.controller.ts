@@ -38,10 +38,10 @@ export class CategoriesController {
   @ApiOkResponse({ type: [CategoryResponseDto] })
   @ApiUnauthorized()
   @Get()
-  async findAll() {
-    const data = await this.service.findAll();
-    return data.map((c) => CategoryResponseDto.from(c));
+  findAll() {
+    return this.service.findAll();
   }
+
   @ApiOperation({ summary: 'Create category' })
   @ApiCreatedResponse({ type: CategoryResponseDto })
   @ApiUnauthorized()
@@ -57,9 +57,8 @@ export class CategoriesController {
   @ApiUnauthorized()
   @ApiNotFound()
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const category = await this.service.findOne(id);
-    return CategoryResponseDto.from(category);
+  findOne(@Param('id') id: string) {
+    return this.service.findOne(id);
   }
 
   @ApiOperation({ summary: 'Update category' })
@@ -68,9 +67,8 @@ export class CategoriesController {
   @ApiBadRequest()
   @ApiNotFound()
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
-    const category = await this.service.update(id, dto);
-    return CategoryResponseDto.from(category);
+  update(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
+    return this.service.update(id, dto);
   }
 
   @ApiOperation({ summary: 'Delete category' })

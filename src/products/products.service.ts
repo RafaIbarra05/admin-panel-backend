@@ -13,14 +13,15 @@ export class ProductsService {
 
   findAll() {
     return this.prisma.product.findMany({
-      include: { category: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
+      include: { category: { select: { id: true, name: true } } },
     });
   }
 
   async create(dto: CreateProductDto) {
     const category = await this.prisma.category.findUnique({
       where: { id: dto.categoryId },
+      select: { id: true },
     });
     if (!category) throw new BadRequestException('categoryId does not exist');
 
@@ -28,16 +29,17 @@ export class ProductsService {
       data: {
         name: dto.name.trim(),
         price: dto.price,
+        position: dto.position ?? 0,
         categoryId: dto.categoryId,
       },
-      include: { category: true },
+      include: { category: { select: { id: true, name: true } } },
     });
   }
 
   async findOne(id: string) {
     const product = await this.prisma.product.findUnique({
       where: { id },
-      include: { category: true },
+      include: { category: { select: { id: true, name: true } } },
     });
     if (!product) throw new NotFoundException('Product not found');
     return product;
@@ -49,6 +51,7 @@ export class ProductsService {
     if (dto.categoryId) {
       const category = await this.prisma.category.findUnique({
         where: { id: dto.categoryId },
+        select: { id: true },
       });
       if (!category) throw new BadRequestException('categoryId does not exist');
     }
@@ -58,17 +61,19 @@ export class ProductsService {
       data: {
         ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
         ...(dto.price !== undefined ? { price: dto.price } : {}),
+        ...(dto.position !== undefined ? { position: dto.position } : {}),
         ...(dto.categoryId !== undefined ? { categoryId: dto.categoryId } : {}),
       },
-      include: { category: true },
+      include: { category: { select: { id: true, name: true } } },
     });
   }
 
   async remove(id: string) {
     await this.findOne(id);
+
     return this.prisma.product.delete({
       where: { id },
-      include: { category: true },
+      include: { category: { select: { id: true, name: true } } },
     });
   }
 }

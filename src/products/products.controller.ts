@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -22,6 +23,7 @@ import {
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -77,12 +79,12 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: 'Delete product' })
-  @ApiOkResponse({ type: ProductResponseDto })
+  @ApiNoContentResponse()
   @ApiUnauthorized()
   @ApiNotFound()
+  @HttpCode(204)
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const removed = await this.service.remove(id);
-    return ProductResponseDto.from(removed);
+    await this.service.remove(id);
   }
 }
