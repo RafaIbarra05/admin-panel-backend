@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import {
   CategoryResponseDto,
@@ -12,6 +11,7 @@ import {
   categoryWithRelationsArgs,
 } from './dto/category-response.dto';
 import { Prisma } from '@prisma/client';
+import { CreateCategoryDto } from './dto/create-category.dto';
 type CategoryCountPayload = Prisma.CategoryGetPayload<{
   select: {
     id: true;
@@ -22,17 +22,37 @@ type CategoryCountPayload = Prisma.CategoryGetPayload<{
 export class CategoriesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    const categories: CategoryWithRelations[] =
-      await this.prisma.category.findMany({
-        orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
-        include: {
-          parent: { select: { id: true, name: true } },
-          _count: { select: { children: true, products: true } },
-        },
-      });
+  async findAll(page = 1, limit = 10) {
+    const safePage = Number.isFinite(page) && page >= 1 ? page : 1;
+    const safeLimit =
+      Number.isFinite(limit) && limit >= 1 && limit <= 100 ? limit : 10;
 
-    return categories.map((c) => CategoryResponseDto.from(c));
+    const skip = (safePage - 1) * safeLimit;
+
+    const [total, rows] = await this.prisma.$transaction([
+      this.prisma.category.count(),
+      this.prisma.category.findMany({
+        ...categoryWithRelationsArgs,
+        skip,
+        take: safeLimit,
+        orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
+      }),
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(total / safeLimit));
+
+    return {
+      data: (rows as CategoryWithRelations[]).map(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        CategoryResponseDto.from.bind(CategoryResponseDto),
+      ),
+      meta: {
+        page: safePage,
+        limit: safeLimit,
+        total,
+        totalPages,
+      },
+    };
   }
   async create(dto: CreateCategoryDto) {
     const name = dto.name.trim();

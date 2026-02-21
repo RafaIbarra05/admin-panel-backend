@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { SaleResponseDto } from './dto/sale-response.dto';
-import { PaginatedSalesResponseDto } from './dto/paginated-sales-response.dto';
+import { PaginatedSalesResponseDto } from '../common/dto/pagination-meta.dto';
 
 type PrismaSale = {
   id: string;

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SaleResponseDto } from './sale-response.dto';
+import { SaleResponseDto } from '../../sales/dto/sale-response.dto';
 
 export class PaginationMetaDto {
   @ApiProperty({ example: 1, minimum: 1 })

@@ -12,7 +12,7 @@ import { SalesService } from './sales.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { SalesQueryDto } from './dto/sales-query.dto';
 import { SaleResponseDto } from './dto/sale-response.dto';
-import { PaginatedSalesResponseDto } from './dto/paginated-sales-response.dto';
+import { PaginatedSalesResponseDto } from '../common/dto/pagination-meta.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
