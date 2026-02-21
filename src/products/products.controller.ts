@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -26,8 +27,10 @@ import {
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { PaginatedProductsResponseDto } from './dto/paginated-products-response.dto';
 @ApiTags('products')
 @ApiBearerAuth('jwt')
 @UseGuards(JwtAuthGuard)
@@ -35,17 +38,16 @@ import {
 export class ProductsController {
   constructor(private service: ProductsService) {}
 
-  @ApiOperation({ summary: 'List products' })
-  @ApiOkResponse({ type: [ProductResponseDto] })
-  @ApiUnauthorized()
+  @ApiOperation({ summary: 'List products (paginated)' })
+  @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, example: 10 })
+  @ApiOkResponse({ type: PaginatedProductsResponseDto })
   @Get()
-  async findAll() {
-    const data = await this.service.findAll();
-    return data.map((p) => {
-      return ProductResponseDto.from(p);
-    });
+  findAll(@Query('page') page?: string, @Query('limit') limit?: string) {
+    const p = page ? Number(page) : 1;
+    const l = limit ? Number(limit) : 10;
+    return this.service.findAll(p, l);
   }
-
   @ApiOperation({ summary: 'Create product' })
   @ApiCreatedResponse({ type: ProductResponseDto })
   @ApiUnauthorized()

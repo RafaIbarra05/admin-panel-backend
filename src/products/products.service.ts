@@ -6,16 +6,45 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import {
+  ProductResponseDto,
+  ProductWithCategory,
+} from './dto/product-response.dto';
 
 @Injectable()
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.product.findMany({
-      orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
-      include: { category: { select: { id: true, name: true } } },
-    });
+  async findAll(page = 1, limit = 10) {
+    const safePage = Number.isFinite(page) && page >= 1 ? page : 1;
+    const safeLimit =
+      Number.isFinite(limit) && limit >= 1 && limit <= 100 ? limit : 10;
+
+    const skip = (safePage - 1) * safeLimit;
+
+    const [total, rows] = await this.prisma.$transaction([
+      this.prisma.product.count(),
+      this.prisma.product.findMany({
+        skip,
+        take: safeLimit,
+        orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
+        include: { category: { select: { id: true, name: true } } },
+      }),
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(total / safeLimit));
+
+    return {
+      data: (rows as ProductWithCategory[]).map((row) =>
+        ProductResponseDto.from(row),
+      ),
+      meta: {
+        page: safePage,
+        limit: safeLimit,
+        total,
+        totalPages,
+      },
+    };
   }
 
   async create(dto: CreateProductDto) {
