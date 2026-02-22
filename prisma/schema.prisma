@@ -22,6 +22,8 @@ model Category {
   parent    Category?  @relation("CategoryToChildren", fields: [parentId], references: [id], onDelete: SetNull)
   children  Category[] @relation("CategoryToChildren")
 
+  isActive  Boolean  @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -36,6 +38,8 @@ model Product {
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  
+  isActive  Boolean  @default(true)
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

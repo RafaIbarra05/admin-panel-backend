@@ -28,6 +28,7 @@ export class ProductsService {
         skip,
         take: safeLimit,
         orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
+        where: { isActive: true },
         include: { category: { select: { id: true, name: true } } },
       }),
     ]);
@@ -66,8 +67,8 @@ export class ProductsService {
   }
 
   async findOne(id: string) {
-    const product = await this.prisma.product.findUnique({
-      where: { id },
+    const product = await this.prisma.product.findFirst({
+      where: { id, isActive: true },
       include: { category: { select: { id: true, name: true } } },
     });
     if (!product) throw new NotFoundException('Product not found');
@@ -100,8 +101,9 @@ export class ProductsService {
   async remove(id: string) {
     await this.findOne(id);
 
-    return this.prisma.product.delete({
+    return this.prisma.product.update({
       where: { id },
+      data: { isActive: false },
       include: { category: { select: { id: true, name: true } } },
     });
   }
